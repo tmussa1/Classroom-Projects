@@ -1,0 +1,93 @@
+/*
+Tofik Mussa
+Submitted to: Dr. Belcher
+This assignment is a review of pointers in general,
+memory management, and using methods
+*/
+#include <iostream>
+#include <string>
+#include <vector>
+#include <stdexcept>
+using namespace std;
+
+class Enemy
+{
+public:
+  string name;
+  int health;
+};
+class EnemySquad
+{
+public:
+    vector<Enemy*> *enemies;
+    
+    EnemySquad() {
+        enemies = new vector<Enemy*>;
+    }
+    
+    ~EnemySquad() {
+    for(int i = 0; i < enemies->size(); i++) {
+        if(enemies->at(i) != NULL){
+            delete enemies->at(i); }
+    }
+        enemies = NULL;
+    }
+
+    void addEnemy(Enemy *myEnemies, int numElems) {
+    for(int i = 0; i < numElems; i++) {
+        enemies->push_back(myEnemies);}
+    }
+    
+    int getEnemyCount() {
+        return enemies->size();
+    }
+
+    Enemy* getEnemyAtIndex(int index) {
+      if(index > enemies->size()) {    
+            throw out_of_range("Index out of bounds");
+        }
+    return enemies->at(index);
+    }
+};
+
+int main()
+{
+
+EnemySquad *badGuys=NULL;
+badGuys = new EnemySquad;
+
+Enemy *newenemies = new Enemy[3];
+newenemies[0].name = "Tofik";
+newenemies[0].health = 19;
+newenemies[1].name = "Louis";
+newenemies[1].health = 10;
+newenemies[2].name = "Jack";
+newenemies[2].health = 1;
+
+badGuys->addEnemy(newenemies, 3);
+
+cout << "Enemies in the squad: " << badGuys->getEnemyCount() << "\n";
+
+
+Enemy *checkBadGuy;
+
+try
+{
+
+checkBadGuy = badGuys->getEnemyAtIndex(1);
+cout << "An enemy is " << checkBadGuy->name << " with health of " << checkBadGuy->health << endl;
+
+checkBadGuy = badGuys->getEnemyAtIndex(7);
+cout << "**This line should not be seen**, enemy is " << checkBadGuy->name << " with health of " << checkBadGuy->health << endl;
+
+}
+
+catch(out_of_range ee){
+cout << ee.what() << "\n";
+}
+
+delete badGuys;
+return 0;
+
+}
+
