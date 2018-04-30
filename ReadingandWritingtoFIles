@@ -1,0 +1,312 @@
+# Classroom-Projects
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include <stack>
+#include <algorithm>
+using namespace std;
+/*
+@Authors:		Tofik Mussa
+				Kirubel Asfaw
+
+Submitted to:	Dr. Kacem
+
+				March 20/ 2018
+
+This program deals with principles of 
+object-oriented programming and
+several data structures
+*/
+class Player {
+private:
+	string name;
+	string team;
+	string position;
+	double price;
+	int ptsPrevSeason;
+
+public:
+
+	virtual stack<Player*> selectPlayer(vector<Player*> players) = 0;
+
+	string getname() {
+		return name;
+	}
+
+	void setname(string n) {
+		this->name = n;
+	}
+
+	string getteam() {
+		return team;
+	}
+
+	void setteam(string t) {
+		this->team = t;
+	}
+
+	string getposition() {
+		return position;
+	}
+
+	void setposition(string p) {
+		this->position = p;
+	}
+
+	double getprice() {
+		return price;
+	}
+
+	void setprice(double pr) {
+		this->price = pr;
+	}
+
+	int getptsPrevSeason() {
+		return ptsPrevSeason;
+	}
+
+	void setptsPrevSeason(int pt) {
+		this->ptsPrevSeason = pt;
+	}
+
+};
+
+class Goalkeeper : public Player {
+public:
+	stack<Player*> selectPlayer(vector<Player*>Players) {
+
+
+		int goalKeeperCount = 0;
+		double sumprice = 0;
+		stack<Player *> s1;
+		static const int budget = 10;
+
+		for (int i = 0; i < Players.size(); i++) {
+			if (Players[i]->getposition() == "Goalkeeper") {
+				if ((budget - sumprice > Players[i]->getprice()) && (Players[i]->getprice() <= budget/2) ) {
+					sumprice += Players[i]->getprice();		//This logic adds only players with prices 
+					s1.push(Players[i]);					//less than the average on a space availability basis
+					goalKeeperCount += 1;
+				}
+			}
+
+			if (goalKeeperCount > 1) {	//Exit the loop if more than the alloted number of spots
+				break;
+			}
+		}
+
+		return s1;
+	}
+
+};
+
+class Defender : public Player {
+public:
+	stack<Player*> selectPlayer(vector<Player*>Players) {
+		int defenderCount = 0;
+		double sumprice = 0;
+		stack<Player *> s2;
+		static const int budget = 25;
+
+		for (int i = 0; i < Players.size(); i++) {
+
+			if (Players[i]->getposition() == "Defender") {
+				if (budget - sumprice > Players[i]->getprice() && (Players[i]->getprice() <= budget / 5)) { //This logic adds only players with prices 
+					sumprice += Players[i]->getprice();														//less than the average on a space availability basis
+					s2.push(Players[i]);
+					defenderCount += 1;
+				}
+			}
+
+			if (defenderCount > 4) {	//Exit the loop if more than the alloted number of spots
+				break;
+			}
+		}
+		return s2;
+	}
+};
+
+class Midfielder : public Player {
+public:
+	stack<Player*> selectPlayer(vector<Player*>Players) {
+		int midfielderCount = 0;
+		double sumprice = 0;
+		stack<Player *> s3;
+		static const int budget = 35;
+
+		for (int i = 0; i < Players.size(); i++) {
+
+			if (Players[i]->getposition() == "Midfielder" && (Players[i]->getprice() <= budget / 5)) {
+				if (budget - sumprice > Players[i]->getprice()) {//This logic adds only players with prices 
+					sumprice += Players[i]->getprice();			//less than the average on a space availability basis
+					s3.push(Players[i]);
+					midfielderCount += 1;
+				}
+			}
+
+			if (midfielderCount > 4) {	//Exit the loop if more than the alloted number of spots
+				break;
+			}
+		}
+		return s3;
+	}
+};
+
+class Forward : public Player {
+public:
+	stack<Player*> selectPlayer(vector<Player*>Players) {
+		int forwardCount = 0;
+		double sumprice = 0;
+		stack<Player *> s4;
+		static const int budget = 25;
+
+		for (int i = 0; i < Players.size(); i++) {
+	
+			if (Players[i]->getposition() == "Forward" && (Players[i]->getprice() <= budget / 3)) {
+				if (budget - sumprice > Players[i]->getprice()) {	//This logic adds only players with prices 
+					sumprice += Players[i]->getprice();				//less than the average on a space availability basis
+					s4.push(Players[i]);
+					forwardCount += 1;
+				}
+			}
+
+			if (forwardCount > 2) {	//Exit the loop if more than the alloted number of spots
+				break;
+			}
+		}
+		return s4;
+	}
+};
+
+
+int main()
+{
+	
+	vector<Player *> Pvect;
+
+	ifstream infile;
+	infile.open("Players.txt");
+
+	if (infile.is_open()) {
+		while (!infile.eof())
+		{
+			
+			string strname,strteam, strposition, strprice, strpoints;
+
+			getline(infile, strname, '#');
+			getline(infile, strteam, '#');
+			getline(infile, strposition, '#');
+			getline(infile, strprice, '#');
+			getline(infile, strpoints, '\n');
+
+			if (strposition == "Goalkeeper") {
+
+				Goalkeeper *glk = new Goalkeeper();		//Populate the Player vector using child classes
+
+				glk->setname(strname);
+				glk->setteam(strteam);
+				glk->setposition(strposition);
+				glk->setprice(stod(strprice));
+				glk->setptsPrevSeason(stoi(strpoints));
+				Pvect.push_back(glk);
+			}
+
+			if (strposition == "Defender") {
+
+				Defender *def = new Defender();
+
+				def->setname(strname);
+				def->setteam(strteam);
+				def->setposition(strposition);
+				def->setprice(stod(strprice));
+				def->setptsPrevSeason(stoi(strpoints));
+				Pvect.push_back(def);
+			}
+
+			if (strposition == "Midfielder") {
+
+				Midfielder *mid = new Midfielder();
+
+				mid->setname(strname);
+				mid->setteam(strteam);
+				mid->setposition(strposition);
+				mid->setprice(stod(strprice));
+				mid->setptsPrevSeason(stoi(strpoints));
+				Pvect.push_back(mid);
+			}
+
+			if (strposition == "Forward") {
+
+				Forward *fwd = new Forward();
+
+				fwd->setname(strname);
+				fwd->setteam(strteam);
+				fwd->setposition(strposition);
+				fwd->setprice(stod(strprice));
+				fwd->setptsPrevSeason(stoi(strpoints));
+				Pvect.push_back(fwd);
+			}
+			
+			
+		}
+		infile.close();
+	}
+
+	Goalkeeper *gk = new Goalkeeper();
+	cout << "*********************************************************" << endl;	//Iterate through the stacks to display the candidates
+	cout << "\n" << "The selected Goalies are: " << endl;
+	cout << "*********************************************************" << endl;
+	stack<Player *> s1;
+	s1 = gk->selectPlayer(Pvect);
+
+	while(!s1.empty()){ 
+		cout << "\n" << s1.top()->getname() << "(" << s1.top()->getposition() << ")" <<endl;
+		s1.pop();
+	}
+	cout << "*********************************************************" << endl;
+	
+	Defender *df = new Defender();
+	
+	cout << "\n" << "The selected Defenders are: " << endl;
+	cout << "*********************************************************" << endl;
+	stack<Player *> s2;
+	s2 = df->selectPlayer(Pvect);
+
+	while (!s2.empty()) {
+		cout << "\n" << s2.top()->getname() << "(" << s2.top()->getposition() << ")" << endl;
+		s2.pop();
+	}
+	cout << "*********************************************************" << endl;
+
+	Midfielder *md = new Midfielder();
+	
+	cout << "\n" << "The selected Midfielders are: " << endl;
+	cout << "*********************************************************" << endl;
+	stack<Player *> s3;
+	s3 = md->selectPlayer(Pvect);
+
+	while (!s3.empty()) {
+		cout << "\n" << s3.top()->getname() << "(" << s3.top()->getposition() << ")" << endl;
+		s3.pop();
+	}
+	cout << "*********************************************************" << endl;
+
+	Forward *fw = new Forward();
+	
+	cout << "\n" << "The selected Forwards are: " << endl;
+	cout << "*********************************************************" << endl;
+	stack<Player *> s4;
+	s4 = fw->selectPlayer(Pvect);
+
+	while (!s4.empty()) {
+		cout << "\n" << s4.top()->getname() << "(" << s4.top()->getposition() << ")" << endl;
+		s4.pop();
+	}
+	cout << "*********************************************************" << endl;
+	
+
+	cin.get();
+	return 0;
+}
